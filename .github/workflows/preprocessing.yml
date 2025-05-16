@@ -29,7 +29,7 @@ jobs:
         run: python preprocessing/automate_Hanuga.py
 
       - name: Upload output artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: preprocessed-data
           path: preprocessing/output/
