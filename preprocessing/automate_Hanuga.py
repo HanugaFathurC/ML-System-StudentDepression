@@ -6,8 +6,9 @@ from sklearn.model_selection import train_test_split
 import joblib
 
 # === Create output directory ===
-OUTPUT_DIR = "output"
-os.makedirs(OUTPUT_DIR, exist_ok=True)
+OUTPUT_DIR = "preprocessing/output"
+if not os.path.exists(OUTPUT_DIR):
+    os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 # === Load raw dataset ===
 df = pd.read_csv("student_depression_raw.csv")
