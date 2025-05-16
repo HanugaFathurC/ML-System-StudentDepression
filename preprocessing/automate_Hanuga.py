@@ -11,7 +11,7 @@ if not os.path.exists(OUTPUT_DIR):
     os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 # === Load raw dataset ===
-df = pd.read_csv("student_depression_raw.csv")
+df = pd.read_csv("../student_depression_raw.csv")
 
 # === Drop unnecessary columns ===
 df.drop(columns=["id"], inplace=True)
