@@ -1,0 +1,35 @@
+name: Run Preprocessing Script
+
+on:
+  push:
+    paths:
+      - automate_Hanuga.py
+      - student_depression_raw.csv
+      - .github/workflows/preprocessing.yml
+  workflow_dispatch:
+
+jobs:
+  run-preprocessing:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          pip install pandas numpy matplotlib seaborn scikit-learn joblib mlflow
+
+      - name: Run preprocessing script
+        run: python automate_Hanuga.py
+
+      - name: Upload output artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: preprocessed-data
+          path: preprocessing/output/
