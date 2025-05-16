@@ -6,7 +6,7 @@ from sklearn.model_selection import train_test_split
 import joblib
 
 # === Create output directory ===
-OUTPUT_DIR = "preprocessing/output"
+OUTPUT_DIR = "output"
 if not os.path.exists(OUTPUT_DIR):
     os.makedirs(OUTPUT_DIR, exist_ok=True)
 
