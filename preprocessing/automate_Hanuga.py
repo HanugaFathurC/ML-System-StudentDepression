@@ -6,12 +6,15 @@ from sklearn.model_selection import train_test_split
 import joblib
 
 # === Create output directory ===
-OUTPUT_DIR = "output"
+OUTPUT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "output")
 if not os.path.exists(OUTPUT_DIR):
     os.makedirs(OUTPUT_DIR, exist_ok=True)
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+csv_path = os.path.join(BASE_DIR, "student_depression_raw.csv")
+
 # === Load raw dataset ===
-df = pd.read_csv("student_depression_raw.csv")
+df = pd.read_csv(csv_path)
 
 # === Drop unnecessary columns ===
 df.drop(columns=["id"], inplace=True)
