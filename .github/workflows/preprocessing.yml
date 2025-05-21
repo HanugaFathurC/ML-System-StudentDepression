@@ -27,12 +27,11 @@ jobs:
 
       - name: Run preprocessing script
         run: python preprocessing/automate_Hanuga.py
-
-      - name: Upload output artifacts
-        uses: actions/upload-artifact@v4.6.2
-        with:
-          name: preprocessed-data
-          path: preprocessing/output/
+        
+      - name: Move processed files to correct folder
+        run: |
+          mkdir -p preprocessing/output
+          mv output/* preprocessing/output/
           
       - name: Commit and push output to repo 
         run: |
@@ -42,5 +41,9 @@ jobs:
           git commit -m "Auto-commit preprocessing output" || echo "preprocessing/output may be unchanged or failed."
           git push origin HEAD
           
-
+      - name: Upload output artifacts
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: preprocessed-data
+          path: preprocessing/output/
      
