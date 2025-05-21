@@ -33,3 +33,14 @@ jobs:
         with:
           name: preprocessed-data
           path: preprocessing/output/
+          
+      - name: Commit and push output to repo 
+        run: |
+          git config user.name "${{ secrets.username }}"
+          git config user.email "${{ secrets.mail }}"
+          git add preprocessing/output/*
+          git commit -m "Auto-commit preprocessing output" || echo "preprocessing/output may be unchanged or failed."
+          git push origin HEAD
+          
+
+     
