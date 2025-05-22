@@ -57,7 +57,7 @@ jobs:
         run: |
           mlflow artifacts download \
             -r runs:/$RUN_ID/modelling \
-            --dst downloaded_model
+            --dst-path downloaded_model
 
       - name: Upload Trained Model Artifact
         uses: actions/upload-artifact@v4.6.2
