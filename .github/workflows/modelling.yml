@@ -51,7 +51,7 @@ jobs:
         run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/student-depression:latest
 
       - name: Upload Model Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: trained-model
           path: modelling/output/
