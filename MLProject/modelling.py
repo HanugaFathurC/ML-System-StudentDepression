@@ -63,8 +63,8 @@ def main():
 
     # === Start MLflow run ===
     if mlflow.active_run() is None:
-        mlflow.start_run()
-
+        mlflow.start_run(run_name="Student Depression Modelling")
+    
     # Log hyperparameters manually
     mlflow.log_param("n_estimators", n_estimators)
     mlflow.log_param("max_depth", max_depth)
