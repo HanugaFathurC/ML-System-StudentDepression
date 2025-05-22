@@ -53,8 +53,14 @@ jobs:
       - name: Push Docker Image
         run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/sd-cc:latest
 
-      - name: Upload Model Artifact
+      - name: Download MLflow Model Artifact
+        run: |
+          mlflow artifacts download \
+            -r runs:/$RUN_ID/modelling \
+            --dst downloaded_model
+
+      - name: Upload Trained Model Artifact
         uses: actions/upload-artifact@v4.6.2
         with:
           name: trained-model
-          path: modelling/output/
+          path: downloaded_model/
