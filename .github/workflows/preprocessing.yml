@@ -50,7 +50,7 @@ jobs:
           path: preprocessing/output/
 
       - name: Trigger Modelling Workflow
-        uses: peter-evans/workflow-dispatch@v1
+        uses: peter-evans/workflow-dispatch@v3
         with:
           repository: HanugaFathurC/ML-System-StudentDepression
           workflow: modelling.yml
