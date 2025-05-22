@@ -25,7 +25,6 @@ def setup_mlflow():
     if not tracking_uri:
         raise ValueError("MLFLOW_TRACKING_URI is not set!")
 
-
     # Set MLflow URI and experiment
     mlflow.set_tracking_uri(tracking_uri)
     mlflow.set_experiment("Student Depression Modelling")
@@ -63,8 +62,10 @@ def main():
 
     # === Start MLflow run ===
     if mlflow.active_run() is None:
-        mlflow.start_run(run_name="Student Depression Modelling")
-    
+        with mlflow.start_run() as run:
+            run_id = run.info.run_id
+            mlflow.tracking.MlflowClient().set_tag(run_id, "mlflow.runName", "run_name")
+
     # Log hyperparameters manually
     mlflow.log_param("n_estimators", n_estimators)
     mlflow.log_param("max_depth", max_depth)
