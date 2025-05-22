@@ -61,11 +61,24 @@ def main():
     max_depth = 25
 
     # === Start MLflow run ===
-    if mlflow.active_run() is None:
-        with mlflow.start_run() as run:
-            run_id = run.info.run_id
-            mlflow.tracking.MlflowClient().set_tag(run_id, "mlflow.runName", "run_name")
+    run = mlflow.active_run()
+    if run is not None:
+        # If a run is already active, get run id
+        run_id = run.info.run_id
+        # get experiment ids
+        experiment_id = run.info.experiment_id
+        # fetch all child runs under a parent run using tags
+        child_runs = mlflow.search_runs(
+            experiment_ids=[experiment_id],
+            filter_string=f"tags.mlflow.parentRunId='{run_id}'",
+        )
+        print("Run already exists. Fetching child runs...")
 
+    else:
+        # Start a new run
+        print("Starting a new MLflow run...")
+        mlflow.start_run()
+        
     # Log hyperparameters manually
     mlflow.log_param("n_estimators", n_estimators)
     mlflow.log_param("max_depth", max_depth)
