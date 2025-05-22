@@ -27,7 +27,10 @@ def setup_mlflow():
 
     # Set MLflow URI and experiment
     mlflow.set_tracking_uri(tracking_uri)
-    mlflow.set_experiment("Student Depression Modelling")
+
+    # Set experiment name
+    if os.getenv("ENV") != "production":
+        mlflow.set_experiment("Student Depression Modelling")
 
     # Set credentials (for DagsHub or remote servers)
     os.environ["MLFLOW_TRACKING_USERNAME"] = username or ""
@@ -61,56 +64,39 @@ def main():
     max_depth = 25
 
     # === Start MLflow run ===
-    run = mlflow.active_run()
-    if run is not None:
-        # If a run is already active, get run id
-        run_id = run.info.run_id
-        # get experiment ids
-        experiment_id = run.info.experiment_id
-        # fetch all child runs under a parent run using tags
-        child_runs = mlflow.search_runs(
-            experiment_ids=[experiment_id],
-            filter_string=f"tags.mlflow.parentRunId='{run_id}'",
+    with mlflow.start_run(nested=True):
+        # Log hyperparameters manually
+        mlflow.log_param("n_estimators", n_estimators)
+        mlflow.log_param("max_depth", max_depth)
+
+        # Train model
+        model = RandomForestClassifier(n_estimators=n_estimators, max_depth=max_depth, random_state=42)
+        model.fit(X_train, y_train)
+
+        # Predict and evaluate
+        y_pred = model.predict(X_test)
+
+        # Evaluate and log metrics
+        accuracy = model.score(X_test, y_test)
+        precision = precision_score(y_test, y_pred, average="weighted")
+        recall = recall_score(y_test, y_pred, average="weighted")
+        f1 = f1_score(y_test, y_pred, average="weighted")
+
+        # Log metrics manually
+        mlflow.log_metric("accuracy", accuracy)
+        mlflow.log_metric("precision_weighted", precision)
+        mlflow.log_metric("recall_weighted", recall)
+        mlflow.log_metric("f1_weighted", f1)
+
+        # Log model manually
+        mlflow.sklearn.log_model(
+            sk_model=model,
+            artifact_path="modelling",
+            input_example=input_example
         )
-        print("Run already exists. Fetching child runs...")
 
-    else:
-        # Start a new run
-        print("Starting a new MLflow run...")
-        mlflow.start_run()
-        
-    # Log hyperparameters manually
-    mlflow.log_param("n_estimators", n_estimators)
-    mlflow.log_param("max_depth", max_depth)
-
-    # Train model
-    model = RandomForestClassifier(n_estimators=n_estimators, max_depth=max_depth, random_state=42)
-    model.fit(X_train, y_train)
-
-    # Predict and evaluate
-    y_pred = model.predict(X_test)
-
-    # Evaluate and log metrics
-    accuracy = model.score(X_test, y_test)
-    precision = precision_score(y_test, y_pred, average="weighted")
-    recall = recall_score(y_test, y_pred, average="weighted")
-    f1 = f1_score(y_test, y_pred, average="weighted")
-
-    # Log metrics manually
-    mlflow.log_metric("accuracy", accuracy)
-    mlflow.log_metric("precision_weighted", precision)
-    mlflow.log_metric("recall_weighted", recall)
-    mlflow.log_metric("f1_weighted", f1)
-
-    # Log model manually
-    mlflow.sklearn.log_model(
-        sk_model=model,
-        artifact_path="modelling",
-        input_example=input_example
-    )
-
-    print(f"Model trained and logged to MLflow with accuracy: {accuracy:.4f}")
-    print(f"accuracy={accuracy:.4f}, precision={precision:.4f}, recall={recall:.4f}, f1={f1:.4f}")
+        print(f"Model trained and logged to MLflow with accuracy: {accuracy:.4f}")
+        print(f"accuracy={accuracy:.4f}, precision={precision:.4f}, recall={recall:.4f}, f1={f1:.4f}")
 
 
 if __name__ == "__main__":
