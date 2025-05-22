@@ -29,11 +29,13 @@ jobs:
 
       - name: Run mlflow project
         run: |
-          mlflow run  MLProject --env-manager=local
+          mlflow run MLProject --env-manager=local | tee mlflow_output.log
 
-      - name: Extract MLflow Run ID
-        id: get_run_id
-        run: echo "RUN_ID=$(ls mlruns/0 | tail -n 1)" >> $GITHUB_ENV
+      - name: Extract MLflow Run ID from logs
+        run: |
+          RUN_ID=$(grep -oP 'MLFLOW_RUN_ID=\K[a-f0-9\-]+' mlflow_output.log)
+          echo "Extracted Run ID: $RUN_ID"
+          echo "RUN_ID=$RUN_ID" >> $GITHUB_ENV
 
       - name: Build Docker Image from MLflow Model
         run: |
@@ -46,10 +48,10 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Tag Docker Image
-        run: docker tag student-depression ${{ secrets.DOCKERHUB_USERNAME }}/student-depression:latest
+        run: docker tag sd-cc ${{ secrets.DOCKERHUB_USERNAME }}/sd-cc:latest
 
       - name: Push Docker Image
-        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/student-depression:latest
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/sd-cc:latest
 
       - name: Upload Model Artifact
         uses: actions/upload-artifact@v4.6.2

@@ -64,7 +64,11 @@ def main():
     max_depth = 25
 
     # === Start MLflow run ===
-    with mlflow.start_run(nested=True):
+    with mlflow.start_run(nested=True) as run:
+        # Log run ID
+        run_id = run.info.run_id
+        print(f"::notice title=MLflow Run ID::MLFLOW_RUN_ID={run_id}")
+
         # Log hyperparameters manually
         mlflow.log_param("n_estimators", n_estimators)
         mlflow.log_param("max_depth", max_depth)
