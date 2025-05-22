@@ -13,28 +13,37 @@ def setup_mlflow():
     if os.getenv("ENV") != "production":
         load_dotenv()
 
-    tracking_uri = "https://dagshub.com/wibugarxurang/student-depression.mlflow"
+    tracking_uri = os.getenv("MLFLOW_TRACKING_URI", "https://dagshub.com/wibugarxurang/student-depression.mlflow")
     username = os.getenv("MLFLOW_TRACKING_USERNAME")
     password = os.getenv("MLFLOW_TRACKING_PASSWORD")
 
+    # Use local fallback if not production and DagsHub is unreachable
+    if os.getenv("ENV") != "production" and not username:
+        print("No username detected. Falling back to local MLflow tracking URI.")
+
+    # Final safety check
     if not tracking_uri:
         raise ValueError("MLFLOW_TRACKING_URI is not set!")
 
+
+    # Set MLflow URI and experiment
     mlflow.set_tracking_uri(tracking_uri)
     mlflow.set_experiment("Student Depression Modelling")
 
+    # Set credentials (for DagsHub or remote servers)
+    os.environ["MLFLOW_TRACKING_USERNAME"] = username or ""
+    os.environ["MLFLOW_TRACKING_PASSWORD"] = password or ""
     print(f"MLflow tracking URI set to: {tracking_uri}")
-
-    os.environ["MLFLOW_TRACKING_USERNAME"] = username
-    os.environ["MLFLOW_TRACKING_PASSWORD"] = password
 
 
 def main():
     # Suppress warnings
     warnings.filterwarnings("ignore")
+
     # Suppress urllib3
     warnings.filterwarnings("ignore", category=UserWarning, module="urllib3")
 
+    # Set up ml flow
     setup_mlflow()
 
     # === Load preprocessed data ===
