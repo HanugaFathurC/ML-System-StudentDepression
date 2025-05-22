@@ -2,11 +2,12 @@ name: Run Preprocessing Script
 
 on:
   push:
-    paths:
-      - preprocessing/automate_Hanuga.py
-      - student_depression_raw.csv
-      - .github/workflows/preprocessing.yml
-  workflow_dispatch:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch: # allows manual triggering from GitHub UI
 
 jobs:
   run-preprocessing:
@@ -23,6 +24,7 @@ jobs:
 
       - name: Install dependencies
         run: |
+          pip install --upgrade pip
           pip install pandas numpy matplotlib seaborn scikit-learn joblib mlflow
 
       - name: Run preprocessing script
@@ -46,4 +48,10 @@ jobs:
         with:
           name: preprocessed-data
           path: preprocessing/output/
-     
+
+      - name: Trigger Modelling Workflow
+        uses: peter-evans/workflow-dispatch@v1
+        with:
+          repository: HanugaFathurC/ML-System-StudentDepression
+          workflow: modelling.yml
+          ref: main

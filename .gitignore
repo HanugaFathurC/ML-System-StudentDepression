@@ -175,3 +175,14 @@ cython_debug/
 
 # DS_Store
 .DS_Store
+
+# MLflow runs
+mlruns/
+mlflow.log
+
+# MLflow artifacts
+mlartifacts/
+
+# MLflow temporary files
+*.tmp
+*.bak

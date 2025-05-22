@@ -1,0 +1,55 @@
+name: Run Modelling Script
+
+on:
+  workflow_dispatch: # allows manual triggering from GitHub UI
+
+jobs:
+  run-experiment:
+    runs-on: ubuntu-latest
+    env:
+      ENV: production
+      MLFLOW_TRACKING_USERNAME: ${{ secrets.MLFLOW_TRACKING_USERNAME }}
+      MLFLOW_TRACKING_PASSWORD: ${{ secrets.MLFLOW_TRACKING_PASSWORD }}
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Run mlflow project
+        run: |
+          mlflow run  MLProject --env-manager=local
+
+      - name: Extract MLflow Run ID
+        id: get_run_id
+        run: echo "RUN_ID=$(ls mlruns/0 | tail -n 1)" >> $GITHUB_ENV
+
+      - name: Build Docker Image from MLflow Model
+        run: |
+          mlflow models build-docker --model-uri "runs:/$RUN_ID/modelling" --name student-depression
+          
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Tag Docker Image
+        run: docker tag student-depression ${{ secrets.DOCKERHUB_USERNAME }}/student-depression:latest
+
+      - name: Push Docker Image
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/student-depression:latest
+
+      - name: Upload Model Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: trained-model
+          path: modelling/output/
