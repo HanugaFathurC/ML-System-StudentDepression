@@ -52,6 +52,7 @@ jobs:
       - name: Trigger Modelling Workflow
         uses: peter-evans/repository-dispatch@v3
         with:
+          event-type: triggering-modelling
           repository: HanugaFathurC/ML-System-StudentDepression
           workflow: modelling.yml
           ref: main
