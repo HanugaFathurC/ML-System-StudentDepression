@@ -7,7 +7,6 @@ from dotenv import load_dotenv
 
 import warnings
 
-
 def setup_mlflow():
     # Load .env file only in local development
     if os.getenv("ENV") != "production":
@@ -36,6 +35,27 @@ def setup_mlflow():
     os.environ["MLFLOW_TRACKING_USERNAME"] = username or ""
     os.environ["MLFLOW_TRACKING_PASSWORD"] = password or ""
     print(f"MLflow tracking URI set to: {tracking_uri}")
+
+def download_model(run_id, artifact_path ,output_dir_name):
+    """
+    Download a model artifact from MLflow by run ID and artifact path.
+    :param run_id: The ID of the MLflow run.
+    :param artifact_path: The path to the artifact in MLflow.
+    :param output_dir_name: The name of the output directory to save the downloaded model.
+    """
+    # Set up client
+    client = mlflow.tracking.MlflowClient()
+
+    output_dir_name = os.path.join(os.path.dirname(os.path.abspath(__file__)), output_dir_name)
+
+    # Check if the model directory exists, if not create it
+    if not os.path.exists(output_dir_name):
+        os.makedirs(output_dir_name, exist_ok=True)
+
+    # Download the model
+    local_path = client.download_artifacts(run_id, artifact_path, output_dir_name)
+
+    print(f"Model downloaded to: {local_path}")
 
 
 def main():
@@ -101,6 +121,9 @@ def main():
 
         print(f"Model trained and logged to MLflow with accuracy: {accuracy:.4f}")
         print(f"accuracy={accuracy:.4f}, precision={precision:.4f}, recall={recall:.4f}, f1={f1:.4f}")
+
+        # Download the model
+        download_model(run_id, "modelling", "output")
 
 
 if __name__ == "__main__":
