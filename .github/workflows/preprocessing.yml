@@ -35,7 +35,8 @@ jobs:
           mkdir -p preprocessing/output
           mv preprocessing/output/* preprocessing/output || echo "No files to move"
           
-      - name: Commit and push output to repo 
+      - name: Commit and push output to repo
+        if: github.event_name != 'pull_request' # optional safety to prevent PR dispatch
         run: |
           git config user.name "${{ secrets.username }}"
           git config user.email "${{ secrets.mail }}"
@@ -50,6 +51,7 @@ jobs:
           path: preprocessing/output/
 
       - name: Trigger Modelling Workflow
+        if: github.event_name != 'pull_request' # optional safety to prevent PR dispatch
         uses: peter-evans/repository-dispatch@v3
         with:
           event-type: triggering-modelling
