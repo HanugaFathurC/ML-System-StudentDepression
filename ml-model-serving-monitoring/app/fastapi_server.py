@@ -25,7 +25,7 @@ async def predict_queue(request: Request):
         data = await request.json()
         request_id = str(uuid.uuid4())
 
-        await redis_client.lpush("inference_queue", json.dumps({
+        redis_client.lpush("inference_queue", json.dumps({
             "id": request_id,
             "input": data["input"]
         }))
@@ -41,7 +41,10 @@ async def predict_queue(request: Request):
 async def get_result(request_id: str):
     try:
         key = f"result:{request_id}"
-        result = await redis_client.get(key)
+        # Fetch result from Redis
+        print(f"Fetching result for job_id {request_id} from Redis with key: {key}")
+        result = redis_client.get(key)
+        print(f"Fetching result for job_id {request_id}: {result}")
         if result:
             return JSONResponse(content={
                 "status": "completed",

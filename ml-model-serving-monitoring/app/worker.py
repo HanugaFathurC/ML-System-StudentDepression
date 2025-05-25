@@ -98,7 +98,7 @@ def process_task():
                 if response.status_code == 200:
                     result = response.json()
                     redis_client.set(f"result:{job_id}", json.dumps(result)) # Set result in Redis
-                    print(f"Processed Request ID: {job_id} - Result: {result.json()}")
+                    print(f"Processed Request ID: {job_id} - Result: {result}")
                 else:
                     text = response.text
                     print(f" Error job {job_id}: {response.status_code} - {text}")
