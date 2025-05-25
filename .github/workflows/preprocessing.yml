@@ -41,7 +41,7 @@ jobs:
           git config user.email "${{ secrets.mail }}"
           git add preprocessing/output/*
           git commit -m "Auto-commit preprocessing output" || echo "preprocessing/output may be unchanged or failed."
-          git push origin HEAD
+          git push origin main
           
       - name: Upload output artifacts
         uses: actions/upload-artifact@v4.6.2
