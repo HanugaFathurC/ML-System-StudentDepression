@@ -29,8 +29,8 @@ with mlflow.start_run():
     mlflow.autolog()
 
     # Define and train the modelling
-    n_estimators = 100
-    max_depth = 10
+    n_estimators = 257
+    max_depth = 13
     model = RandomForestClassifier(n_estimators=n_estimators, max_depth=max_depth, random_state=42)
 
     # Log the modelling explicitly
