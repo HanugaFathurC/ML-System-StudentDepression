@@ -56,6 +56,10 @@ for n_estimators in n_estimators_range:
             # Log modelling
             mlflow.sklearn.log_model(model, artifact_path="modelling", input_example=input_example)
 
+            # Log data
+            mlflow.log_artifact(os.path.join(PREPROCESS_DIR, "student_depression_processed.csv"),
+                                artifact_path="data")
+
             # Track best modelling
             if acc > best_accuracy:
                 best_accuracy = acc
