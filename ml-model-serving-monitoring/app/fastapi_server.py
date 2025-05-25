@@ -42,9 +42,7 @@ async def get_result(request_id: str):
     try:
         key = f"result:{request_id}"
         # Fetch result from Redis
-        print(f"Fetching result for job_id {request_id} from Redis with key: {key}")
         result = redis_client.get(key)
-        print(f"Fetching result for job_id {request_id}: {result}")
         if result:
             return JSONResponse(content={
                 "status": "completed",
