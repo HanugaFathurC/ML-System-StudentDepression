@@ -1,6 +1,6 @@
 # ML System: Student Depression Detection Dashboard
 **Author:** hanugafc  
-**Stack:** FastAPI · Redis · MLflow · Streamlit · Prometheus · Grafana
+**Stack:** FastAPI · Redis · MLflow · Streamlit · Prometheus · Grafana · Docker
 
 ---
 
@@ -13,7 +13,7 @@ It includes:
 - A **FastAPI backend** for queuing inference requests
 - A **Redis queue** for managing asynchronous jobs
 - A **worker** service to preprocess inputs, call the model, and return results
-- An **MLflow model server** to handle predictions
+- An **MLflow server** to handle tracking model
 - **Prometheus & Grafana** for monitoring system performance and model health
 
 ---
@@ -99,7 +99,13 @@ Web based application for users to detect student's depression
 
 ---
 
-## ⚙️ Running (Manual)
+## Serving Model using docker
+```bash
+docker run --platform linux/amd64 -p 5050:8080 --name depression-detector-api wibugarxurang/sd-cc:latest
+```
+---
+
+## ⚙️ Running System (Manual)
 
 ```bash
 # Start Redis
