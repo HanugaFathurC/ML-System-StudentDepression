@@ -67,7 +67,17 @@ if st.button("Predict"):
         }
 
         response = requests.post(f"{API_BASE_URL}/predict_queue", json=payload)
-        time.sleep(1)  # Wait for FastAPI to process the request
+
+        progress_text = "Sending request to server for prediction. Please wait..."
+        my_bar = st.progress(0, text=progress_text)
+
+        for percent_complete in range(100):
+            time.sleep(0.01)
+            my_bar.progress(percent_complete + 1, text=progress_text)
+        time.sleep(3)
+        my_bar.empty()
+
+
         if response.status_code != 200:
             st.error(f"Error: {response.status_code} - {response.text}")
 
@@ -78,7 +88,8 @@ if st.button("Predict"):
             result_resp = requests.get(f"{API_BASE_URL}/get_result/{job_id}")
 
             result_data = result_resp.json()
-            time.sleep(1)  # Wait for result to be available
+            with st.spinner("Processing your request..."):
+                time.sleep(3)
             if result_data.get("status") == "completed":
                 raw_result = result_data["result"]
 
